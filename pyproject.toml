@@ -1,0 +1,31 @@
+[tool.poetry]
+name = "digitalocean_ip_changer"
+version = "0.1.0"
+description = "IP changer for the DigitalOcean firewall rules"
+authors = ["HitLuca <lsimonetto@urbancoolab.com>"]
+readme="README.rst"
+license="MIT"
+
+[tool.poetry.dependencies]
+python = "~3.6"
+pyyaml = "^5.3.1"
+requests = "^2.23.0"
+ipy = "^1.00"
+pylint = {version = "^2.4.4", allow-prereleases = true}
+
+[tool.poetry.dev-dependencies]
+pytest = "^4.6"
+vulture = "^1.3"
+black = "^19.10b0"
+pylint = "^2.4.4"
+mypy = "^0.770"
+pytest-cov = "^2.8.1"
+pytest-socket = "^0.3.3"
+
+[tool.poetry.scripts]
+digital_ocean_ip_changer = "digitalocean_ip_changer.main:main"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
+
