@@ -1,13 +1,13 @@
 [tool.poetry]
-name = "digitalocean_ip_changer"
+name = "ucl-firewalls-ip-changer"
 version = "0.1.0"
-description = "IP changer for the DigitalOcean firewall rules"
+description = "IP changer for the UCL firewall rules"
 authors = ["HitLuca <lsimonetto@urbancoolab.com>"]
 readme="README.rst"
 license="MIT"
 
 [tool.poetry.dependencies]
-python = "~3.6"
+python = "^3.6"
 pyyaml = "^5.3.1"
 requests = "^2.23.0"
 ipy = "^1.00"
@@ -23,7 +23,7 @@ pytest-cov = "^2.8.1"
 pytest-socket = "^0.3.3"
 
 [tool.poetry.scripts]
-digital_ocean_ip_changer = "digitalocean_ip_changer.main:main"
+update_ucl_firewalls = "ucl_firewalls_ip_changer.main:main"
 
 [build-system]
 requires = ["poetry>=0.12"]

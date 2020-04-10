@@ -1,22 +1,18 @@
 import logging
-import sys
 import subprocess
-
-from pathlib import Path
+import sys
 from enum import Enum
+from pathlib import Path
 
 import requests
-
 import yaml
 from IPy import IP
 
+
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
-from digitalocean_ip_changer.constants import (
-    CONFIG_FILEPATH,
-    LOG_FILEPATH,
-    IP_PROVIDER_URL,
-)
+from ucl_firewalls_ip_changer.constants import (CONFIG_FILEPATH,
+                                                IP_PROVIDER_URL, LOG_FILEPATH)
 
 logger = logging.getLogger(__name__)
 
