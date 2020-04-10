@@ -1,2 +1,0 @@
-include versioneer.py
-include digitalocean_ip_changer/_version.py
