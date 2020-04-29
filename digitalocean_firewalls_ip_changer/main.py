@@ -49,9 +49,28 @@ def main() -> None:
 
 
 def _load_config() -> dict:
+    if not CONFIG_FILEPATH.exists():
+        logger.info(f"no configuration found, creating an empty configuration")
+        config = _create_empty_config()
+        logger.info(f"saving empty config")
+        _save_config(config)
+        logger.info(
+            f"please open {CONFIG_FILEPATH} and replace all the required fields, then re-run the project!"
+        )
+        raise SystemExit()
     with CONFIG_FILEPATH.open("r") as f:
         config = yaml.load(f, yaml.FullLoader)
     return config
+
+
+def _create_empty_config() -> dict:
+    return {
+        "firewall_id": "replace this with your firewall id",
+        "last_ip": "",
+        "past_ips": [],
+        "ports": ["replace this with a list of ports to apply rules to"],
+        "protocol": "tcp",
+    }
 
 
 def _edit_firewall_rules(config: dict, action: FirewallRuleActions) -> None:
