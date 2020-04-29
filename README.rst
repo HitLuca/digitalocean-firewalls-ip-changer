@@ -27,11 +27,20 @@ This project requires python to be installed, and at least at version 3.6
 This project works using poetry (https://python-poetry.org/docs/) to create a virtual environment
 and not pollute system interpreters. Make sure to install it in order to use this project.
 
+This project also requires doctl, a DigitalOcean cli interface. For this reason, first do the following:
+
+* Install Doctl to use the DigitalOcean APIs (https://github.com/digitalocean/doctl/blob/master/README.md)
+* Log in to the DigitalOcean service using doctl
+
+A guide that describes all the features of doctl can be found `here <https://www.digitalocean.com/community/tutorials/how-to-use-doctl-the-official-digitalocean-command-line-client>`_.
+After doctl is installed, install the project by running:
+
 .. code-block:: bash
 
     git clone https://github.com/HitLuca/digitalocean-firewalls-ip-changer
     cd digitalocean-firewalls-ip-changer
     poetry install
+
 
 Running the project
 -------------------
@@ -72,6 +81,17 @@ this project uses a yaml configuration file
 * ``ports`` are the ports you will need to use as a remote developer, in this example ``80 443 8081``
 * ``protocol`` should be kept equal to ``tcp``
 
+How to the firewall_id
+----------------------
+
+If the firewall which requires updates hasn't been renamed from its original id, congratulations! This
+is the id you need to use (an example id is ``abc-12b123jl-34k2-3j1n-532j-as234jlb2``)
+
+If the firewall id has been updated to something different than the original, then you need to retrieve it:
+
+* List your firewalls, using ``doctl compute firewall list``
+* Find your firewall_id
+
 Contribute
 ----------
 
@@ -93,6 +113,5 @@ The project is licensed under the MIT license.
 Planned Features
 ----------------
 
+* Ensure that doctl is installed before running any operations
 * Allow updating multiple firewalls at once
-* Improve how configuration files are handled
-* Increase robustness by adding more checks
