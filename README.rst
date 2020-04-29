@@ -1,6 +1,9 @@
 DigitalOcean Firewalls IP changer
 =================================
 
+.. image:: https://travis-ci.com/HitLuca/digitalocean-firewalls-ip-changer.svg?branch=master
+    :target: https://travis-ci.com/HitLuca/digitalocean-firewalls-ip-changer
+
 .. image:: http://hits.dwyl.com/HitLuca/digitalocean-firewalls-ip-changer.svg
     :target: http://hits.dwyl.com/HitLuca/digitalocean-firewalls-ip-changer
 
