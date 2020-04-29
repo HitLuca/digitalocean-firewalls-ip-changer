@@ -11,13 +11,13 @@ python = "^3.6"
 pyyaml = "^5.3.1"
 requests = "^2.23.0"
 ipy = "^1.00"
-pylint = {version = "^2.4.4", allow-prereleases = true}
 
 [tool.poetry.dev-dependencies]
 vulture = "^1.3"
 black = "^19.10b0"
-pylint = "^2.4.4"
+pylint = "^2.5.0"
 mypy = "^0.770"
+pygments = "^2.6.1"
 
 [tool.poetry.scripts]
 update_digitalocean_firewall = "digitalocean_firewalls_ip_changer.main:main"
