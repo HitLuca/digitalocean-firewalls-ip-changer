@@ -11,8 +11,11 @@ from IPy import IP
 
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
-from ucl_firewalls_ip_changer.constants import (CONFIG_FILEPATH,
-                                                IP_PROVIDER_URL, LOG_FILEPATH)
+from digitalocean_firewalls_ip_changer.constants import (
+    CONFIG_FILEPATH,
+    IP_PROVIDER_URL,
+    LOG_FILEPATH,
+)
 
 logger = logging.getLogger(__name__)
 
