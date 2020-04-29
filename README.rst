@@ -84,7 +84,7 @@ this project uses a yaml configuration file
 * ``ports`` are the ports you will need to use as a remote developer, in this example ``80 443 8081``
 * ``protocol`` should be kept equal to ``tcp``
 
-How to the firewall_id
+How to find the firewall_id
 ----------------------
 
 If the firewall which requires updates hasn't been renamed from its original id, congratulations! This
