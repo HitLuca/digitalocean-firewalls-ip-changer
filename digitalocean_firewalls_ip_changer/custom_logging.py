@@ -2,9 +2,13 @@
 logging related module
 """
 import logging
+import logging.handlers
 import sys
 from enum import Enum
 from pathlib import Path
+from typing import Optional
+
+from digitalocean_firewalls_ip_changer.constants import PROJECT_NAME
 
 logger = logging.getLogger(__name__)
 
@@ -19,12 +23,12 @@ class LoggingLevels(Enum):
     WARNING = logging.WARNING
 
 
-def setup_logger(log_filepath: Path, logging_level: LoggingLevels) -> None:
+def setup_logger(log_filepath: Optional[Path], logging_level: LoggingLevels) -> None:
     """
     sets up the logging facility for when design_engine is run from cli
 
     Args:
-        log_filepath (Path): filepath for the output log file
+        log_filepath (Optional[Path]): filepath for the output log file. If log_filepath is None then no logging is saved to file
         logging_level (LoggingLevels): logging level to use (info, warning, etc))
     """
 
@@ -32,7 +36,7 @@ def setup_logger(log_filepath: Path, logging_level: LoggingLevels) -> None:
         """
         exception hook used to log any unhandled exception before throwing
         """
-        logger.exception("Exception", exc_info=exc_info)
+        logger.exception("Uncaught exception", exc_info=exc_info)
 
     if log_filepath:
         log_folder = log_filepath.parents[0]
@@ -41,19 +45,26 @@ def setup_logger(log_filepath: Path, logging_level: LoggingLevels) -> None:
             log_folder.mkdir(parents=True)
 
     sys.excepthook = _exception_hook
-    formatter_format = "%(asctime)s : %(levelname)s : %(name)s : %(message)s"
-    formatter = logging.Formatter(
-        fmt=formatter_format,
-        datefmt="%H:%M:%S" if logging_level == LoggingLevels.DEBUG else None,
+
+    console_formatter = logging.Formatter(
+        "%(levelname)s : %(name)s : %(message)s", datefmt=""
     )
-    stderr_handler = logging.StreamHandler(sys.stderr)
-    stderr_handler.setFormatter(formatter)
+    console_handler = logging.StreamHandler()
+    console_handler.setFormatter(console_formatter)
+    console_handler.setLevel(logging_level.value)
 
     if log_filepath:
-        logging.basicConfig(
-            level=logging_level.value, format=formatter_format, filename=log_filepath
+        file_formatter = logging.Formatter(
+            "%(asctime)s : %(levelname)s : %(name)s : %(message)s"
         )
+        file_handler = logging.handlers.RotatingFileHandler(
+            log_filepath, maxBytes=5 * 1024 ^ 2, backupCount=1
+        )
+        file_handler.setFormatter(file_formatter)
+        file_handler.setLevel(logging.INFO)
+        logging.getLogger().addHandler(file_handler)
 
-    logging.getLogger().addHandler(stderr_handler)
-    logging.getLogger().setLevel(logging.INFO)
-    logging.getLogger("digitalocean_firewalls_ip_changer").setLevel(logging_level.value)
+    logging.getLogger().addHandler(console_handler)
+
+    logging.getLogger().setLevel(logging.WARNING)
+    logging.getLogger(PROJECT_NAME).setLevel(logging.DEBUG)
