@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "digitalocean-firewalls-ip-changer"
-version = "0.1.0"
+version = "0.2.0"
 description = "IP changer for the DigitalOcean firewall rules"
 authors = ["HitLuca <luca.simonetto.94@gmail.com>"]
 readme="README.rst"
