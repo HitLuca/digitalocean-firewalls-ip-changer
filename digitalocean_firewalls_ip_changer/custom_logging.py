@@ -6,7 +6,7 @@ import logging.handlers
 import sys
 from enum import Enum
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Any
 
 from digitalocean_firewalls_ip_changer.constants import PROJECT_NAME
 
@@ -32,11 +32,11 @@ def setup_logger(log_filepath: Optional[Path], logging_level: LoggingLevels) -> 
         logging_level (LoggingLevels): logging level to use (info, warning, etc))
     """
 
-    def _exception_hook(*exc_info):
+    def _exception_hook(*exc_info: Any) -> None:
         """
         exception hook used to log any unhandled exception before throwing
         """
-        logger.exception("Uncaught exception", exc_info=exc_info)
+        logger.exception("Uncaught exception", exc_info=exc_info)  # type: ignore
 
     if log_filepath:
         log_folder = log_filepath.parents[0]

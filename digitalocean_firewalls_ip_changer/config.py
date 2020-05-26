@@ -2,82 +2,75 @@
 configuration object used to serialize and deserialize user data
 """
 import logging
+from dataclasses import dataclass, field
+from typing import Any, Dict, List
 
-from dataclasses import dataclass
+import marshmallow_dataclass
 from IPy import IP
+from marshmallow import ValidationError
+from marshmallow.validate import Validator
+from marshmallow_dataclass import NewType
+
+from digitalocean_firewalls_ip_changer.errors import BadConfigInputError
 
 logger = logging.getLogger(__name__)
 
 
+class IPValidator(Validator):
+    def __call__(self, value: Any) -> Any:
+        try:
+            IP(value)
+        except ValueError:
+            raise ValidationError("not an IP")
+        return value
+
+
+class ListOfPortsValidator(Validator):
+    def __call__(self, values: Any) -> Any:
+        if not isinstance(values, list):
+            raise ValidationError("not a list")
+
+        for value in values:
+            if not isinstance(value, int):
+                raise ValidationError("not an int")
+
+            if not value > 0:
+                raise ValidationError("port not > 0")
+        return values
+
+
+IPType = NewType("IP", str, validate=IPValidator())
+
+
 @dataclass
 class Config:
+    """
+    config class storing parameters
+    """
+
     firewall_id: str
-    last_ip: str
-    past_ips: list
-    ports: list
+    last_ip: IPType  # type: ignore
+    past_ips: List[IPType]  # type: ignore
+    ports: List[int] = field(metadata={"validate": ListOfPortsValidator()})
     protocol: str
 
     @staticmethod
-    def from_dict(config: dict) -> "Config":
+    def from_dict(config: Dict[str, Any]) -> "Config":
         """
-        parses an input config dictionary into a config object
-
-        Raises:
-            ValueError: if last_ip is not an ip
-            ValueError: if one of the past_ips is not an ip
+        loads a config from an input dictionary
 
         Returns:
             Config: config object
         """
         assert isinstance(config, dict), f"{type(config)}"
 
-        keys_list = ["firewall_id", "last_ip", "past_ips", "ports", "protocol"]
-        config_keys = list(config.keys())
+        try:
+            config_object = ConfigSchema().load(config)
+        except ValidationError as e:
+            raise BadConfigInputError(e)
 
-        assert set(keys_list) == set(
-            config_keys
-        ), f"expected config to have keys {keys_list}, got {config_keys}"
-
-        firewall_id = config["firewall_id"]
-        last_ip = config["last_ip"]
-        past_ips = config["past_ips"]
-        ports = config["ports"]
-        protocol = config["protocol"]
-
-        assert isinstance(firewall_id, str)
-
-        assert isinstance(last_ip, str)
-        if last_ip != "":
-            try:
-                IP(last_ip)
-            except ValueError:
-                raise ValueError(f"{last_ip} is not an IP")
-
-        assert isinstance(past_ips, list)
-        for ip in past_ips:
-            assert isinstance(ip, str)
-            try:
-                IP(ip)
-            except ValueError:
-                raise ValueError(f"{ip} is not an IP")
-
-        assert isinstance(ports, list)
-
-        for port in ports:
-            assert isinstance(port, int)
-            assert port > 0
-
-        assert protocol == "tcp", f"{protocol}"
-
-        config = Config(
-            firewall_id=firewall_id,
-            last_ip=last_ip,
-            past_ips=past_ips,
-            ports=ports,
-            protocol=protocol,
-        )
-        logger.debug(config)
-        return config
+        assert isinstance(config_object, Config)
+        return config_object
 
     @staticmethod
     def first_use() -> "Config":
@@ -91,6 +84,9 @@ class Config:
             firewall_id="replace this with your firewall id",
             last_ip="",
             past_ips=[],
-            ports=["replace this with a list of ports to apply rules to"],
+            ports=[-1],
             protocol="tcp",
         )
+
+
+ConfigSchema = marshmallow_dataclass.class_schema(Config)

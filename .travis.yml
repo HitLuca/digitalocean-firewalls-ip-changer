@@ -10,3 +10,4 @@ install:
 script:
   - python -m pytest
   - pylint -f parseable --errors-only --rcfile setup.cfg digitalocean_firewalls_ip_changer
+  - mypy --strict digitalocean_firewalls_ip_changer
