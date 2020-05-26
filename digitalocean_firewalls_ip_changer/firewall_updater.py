@@ -113,10 +113,15 @@ def _edit_firewall_rules(config: Config, action: FirewallRuleActions) -> None:
 
     assert isinstance(action, FirewallRuleActions)
 
-    for port in config.ports:
-        _edit_firewall_rule(
-            config.firewall_id, config.protocol, port, config.last_ip, action
-        )
+    for firewall in config.firewalls:
+        logger.debug(f"editing rule for firewall {firewall.firewall_id}")
+
+        for rule in firewall.rules:
+            logger.debug(f"editing rule {rule}")
+
+            _edit_firewall_rule(
+                firewall.firewall_id, rule.protocol, rule.port, config.last_ip, action
+            )
 
 
 def _build_rule(protocol: str, port: int, address: str) -> str:

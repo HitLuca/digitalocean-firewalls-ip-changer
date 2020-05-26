@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List
 
 import marshmallow_dataclass
+import marshmallow
 from IPy import IP
 from marshmallow import ValidationError
 from marshmallow.validate import Validator
@@ -17,6 +18,10 @@ logger = logging.getLogger(__name__)
 
 
 class IPValidator(Validator):
+    """
+    validator for strings containing IPs
+    """
+
     def __call__(self, value: Any) -> Any:
         try:
             IP(value)
@@ -25,21 +30,27 @@ class IPValidator(Validator):
         return value
 
 
-class ListOfPortsValidator(Validator):
-    def __call__(self, values: Any) -> Any:
-        if not isinstance(values, list):
-            raise ValidationError("not a list")
-
-        for value in values:
-            if not isinstance(value, int):
-                raise ValidationError("not an int")
-
-            if not value > 0:
-                raise ValidationError("port not > 0")
-        return values
-
-
 IPType = NewType("IP", str, validate=IPValidator())
+
+
+@dataclass
+class FirewallRule:
+    """
+    dataclass for a firewall rule
+    """
+
+    protocol: str
+    port: int = field(metadata={"validate": marshmallow.validate.Range(min=1)})
+
+
+@dataclass
+class FirewallConfig:
+    """
+    dataclass for a firewall config
+    """
+
+    firewall_id: str
+    rules: List[FirewallRule]
 
 
 @dataclass
@@ -48,11 +59,9 @@ class Config:
     config class storing parameters
     """
 
-    firewall_id: str
+    firewalls: List[FirewallConfig]
     last_ip: IPType  # type: ignore
     past_ips: List[IPType]  # type: ignore
-    ports: List[int] = field(metadata={"validate": ListOfPortsValidator()})
-    protocol: str
 
     @staticmethod
     def from_dict(config: Dict[str, Any]) -> "Config":
@@ -81,11 +90,14 @@ class Config:
             Config: config object
         """
         return Config(
-            firewall_id="replace this with your firewall id",
+            firewalls=[
+                FirewallConfig(
+                    firewall_id="replace this with your firewall id",
+                    rules=[FirewallRule(protocol="tcp", port=0)],
+                )
+            ],
             last_ip="",
             past_ips=[],
-            ports=[-1],
-            protocol="tcp",
         )
 
 

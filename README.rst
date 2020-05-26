@@ -19,7 +19,7 @@ Features
 
 * Automated removal of your old ip from the firewalls
 * Automated addition of your new ip to the firewalls
-* Supports creating a firewall rule for multiple ports
+* Supports creating multiple firewall rules, and for multiple firewalls
 * Easy to understand yaml config file, in which all the ip history is also kept
 
 Installation
@@ -67,25 +67,36 @@ this project uses a yaml configuration file
 
 .. code-block:: yaml
 
-    firewall_id: 123-456-abc-def
-    last_ip: 11.11.11.11
-    past_ips:
-        - 22.22.22.22
-        - 33.33.33.33
-    ports:
-        - 80
-        - 443
-        - 8081
-    protocol: tcp
+    firewalls:
+    - firewall_id: 11111111-aaaa-2222-bbbb-333333333333
+        rules:
+        - protocol: tcp
+            port: 80
+        - protocol: tcp
+            port: 443
+    - firewall_id: 22222222-aaaa-2222-bbbb-333333333333
+        rules:
+        - protocol: tcp
+            port: 1337
 
-* The ``firewall_id`` indicates the DigitalOcean id assigned to the firewall you want to update
+    last_ip: 22.33.44.55
+    past_ips:
+    - 11.22.33.44
+
+* ``firewalls`` is a list of firewalls you want to update
+
+  * ``firewall_id`` indicates the DigitalOcean id assigned to a particular firewall
+  * ``rules`` contains each rule to be updated
+
+    * ``protocol`` should be kept equal to ``tcp``
+    * ``ports`` is the port you will need to use as a remote developer, in this example ``80``, ``443``, or ``1337``
+
 * ``last_ip`` is the last ip recorded, usually your current one
 * ``past_ips`` are all the past ips you had, for reference, should any issues arise
-* ``ports`` are the ports you will need to use as a remote developer, in this example ``80 443 8081``
-* ``protocol`` should be kept equal to ``tcp``
+
 
 How to find the firewall_id
-----------------------
+---------------------------
 
 If the firewall which requires updates hasn't been renamed from its original id, congratulations! This
 is the id you need to use (an example id is ``abc-12b123jl-34k2-3j1n-532j-as234jlb2``)
@@ -117,4 +128,3 @@ Planned Features
 ----------------
 
 * Ensure that doctl is installed before running any operations
-* Allow updating multiple firewalls at once
