@@ -1,0 +1,2 @@
+class BadConfigInputError(ValueError):
+    pass
