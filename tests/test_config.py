@@ -7,14 +7,12 @@ from digitalocean_firewalls_ip_changer.config import Config
 from digitalocean_firewalls_ip_changer.errors import BadConfigInputError
 
 
-@pytest.fixture(name="empty_config")
+@pytest.fixture(name="empty_config")  # type: ignore
 def fixture_empty_config() -> Dict[str, Any]:
     return {
-        "firewall_id": "",
+        "firewalls": [{"firewall_id": "", "rules": [{"protocol": "", "port": 0}]}],
         "last_ip": "",
         "past_ips": [],
-        "ports": [],
-        "protocol": "",
     }
 
 
@@ -26,7 +24,7 @@ def test__from_dict__not_dict() -> None:
 
 
 def test__from_dict__missing_keys() -> None:
-    config = {"firewall_id": ""}
+    config = {"last_ip": ""}
 
     with pytest.raises(BadConfigInputError):
         Config.from_dict(config)
@@ -34,7 +32,7 @@ def test__from_dict__missing_keys() -> None:
 
 def test__from_dict__wrong_types(empty_config: Dict[str, Any]) -> None:
     config = dict(empty_config)
-    config["firewall_id"] = 3
+    config["firewalls"][0]["firewall_id"] = 3
     with pytest.raises(BadConfigInputError):
         Config.from_dict(config)
 
@@ -68,41 +66,44 @@ def test__from_dict__wrong_types(empty_config: Dict[str, Any]) -> None:
         Config.from_dict(config)
 
     config = dict(empty_config)
-    config["ports"] = 3
+    config["firewalls"][0]["rules"][0]["port"] = 3
     with pytest.raises(BadConfigInputError):
         Config.from_dict(config)
 
     config = dict(empty_config)
-    config["ports"] = ["3a"]
+    config["firewalls"][0]["rules"][0]["port"] = "3a"
     with pytest.raises(BadConfigInputError):
         Config.from_dict(config)
 
     config = dict(empty_config)
-    config["ports"] = [-3]
+    config["firewalls"][0]["rules"][0]["port"] = -3
     with pytest.raises(BadConfigInputError):
         Config.from_dict(config)
 
     config = dict(empty_config)
-    config["protocol"] = 3
+    config["firewalls"][0]["rules"][0]["protocol"] = 3
     with pytest.raises(BadConfigInputError):
         Config.from_dict(config)
 
 
 def test__from_dict(empty_config: Dict[str, Any]) -> None:
-    empty_config["firewall_id"] = "test"
+    empty_config["firewalls"][0]["firewall_id"] = "test"
     empty_config["last_ip"] = "192.168.0.1"
     empty_config["past_ips"] = ["192.168.3.1", "192.111.0.1"]
-    empty_config["ports"] = [1, 50, 332]
-    empty_config["protocol"] = "tcp"
+    empty_config["firewalls"][0]["rules"][0]["port"] = 1
+    empty_config["firewalls"][0]["rules"][0]["protocol"] = "tcp"
 
     Config.from_dict(empty_config)
 
 
 def test__first_use() -> None:
     assert asdict(Config.first_use()) == {
-        "firewall_id": "replace this with your firewall id",
+        "firewalls": [
+            {
+                "firewall_id": "replace this with your firewall id",
+                "rules": [{"protocol": "tcp", "port": 0}],
+            }
+        ],
         "last_ip": "",
         "past_ips": [],
-        "ports": [-1],
-        "protocol": "tcp",
     }
