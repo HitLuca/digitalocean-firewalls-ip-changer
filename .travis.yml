@@ -8,6 +8,6 @@ install:
   - pip install -r requirements.txt
 
 script:
-  - python -m pytest
-  - pylint -f parseable --errors-only --rcfile setup.cfg digitalocean_firewalls_ip_changer
-  - mypy --strict digitalocean_firewalls_ip_changer
+  - python -m pytest --cov-fail-under=24
+  - pylint -f parseable --errors-only --rcfile setup.cfg digitalocean_firewalls_ip_changer tests
+  - mypy --strict .
