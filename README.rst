@@ -7,6 +7,9 @@ DigitalOcean Firewalls IP changer
 .. image:: http://hits.dwyl.com/HitLuca/digitalocean-firewalls-ip-changer.svg
     :target: http://hits.dwyl.com/HitLuca/digitalocean-firewalls-ip-changer
 
+.. image:: https://img.shields.io/badge/code%20style-black-black
+    :target: https://black.readthedocs.io/en/stable/
+
 This personal project aims to give an easy and automated way to access resources created using the
 DigitalOcean service, but blocked behind firewalls.
 Especially during the current global crysis (great covid-19 pandemic of the 21st century), developers
